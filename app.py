@@ -2,24 +2,24 @@ from flask import Flask, request
 import requests
 import json
 
-app = Flask(__name__)  # ← cette ligne doit absolument venir avant le @app.route
+app = Flask(__name__)
+
+BOT_TOKEN = "7681427635:AAHLK2hvr2ooTiQJV_axXeGRlTffh7-HTKg"
+CHAT_ID = "-1002501325876"
 
 @app.route("/", methods=["POST"])
 def alert():
     try:
-        raw_data = request.data.decode("utf-8")
-        print("RAW DATA:", raw_data)
-
         if request.is_json:
             data = request.get_json()
+            message = data.get("message", "⚠️ Alerte vide (JSON)")
         else:
-            data = json.loads(raw_data)
+            message = request.data.decode("utf-8")
 
-        message = data.get("message", "⚠️ Alerte reçue, mais sans message clair.")
-
-        url = f"https://api.telegram.org/bot7681427635:AAHLK2hvr2ooTiQJV_axXeGRlTffh7-HTKg/sendMessage"
+        # Envoi vers Telegram
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
         payload = {
-            "chat_id": "-1002501325876",
+            "chat_id": CHAT_ID,
             "text": message
         }
 
